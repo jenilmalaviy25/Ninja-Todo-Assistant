@@ -1,8 +1,9 @@
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom'
-import Signup from './signup'
-import Login from './login'
-import Home from './home'
 import ChatBot from './ChatBot'
+import Home from './Home'
+import UserProfile from './UserProfile'
+import Login from './Login'
+import Signup from './Signup'
 
 
 const PrivateRoute = ({ children }) => {
@@ -15,12 +16,15 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
+        <Route path='/signup' element={<Signup/>} />
         <Route path='/home' element={<PrivateRoute>
           <Home />
         </PrivateRoute>} />
         <Route path='/chatbot' element={<PrivateRoute>
           <ChatBot/>
+        </PrivateRoute>}/>
+         <Route path='/profile' element={<PrivateRoute>
+          <UserProfile/>
         </PrivateRoute>}/>
       </Routes>
     </BrowserRouter>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { ToastContainer, toast } from 'react-toastify'
 import axios from 'axios'
-import { FaTrash, FaMicrophone, FaRobot, FaCheck, FaPlus, FaX } from 'react-icons/fa6'
+import { FaTrash, FaMicrophone, FaRobot, FaCheck, FaPlus, FaX, FaUser } from 'react-icons/fa6'
 import { MdOutlineDone } from 'react-icons/md'
 import { IoClose, IoSparkles } from 'react-icons/io5'
 import { MdModeEditOutline } from "react-icons/md"
@@ -9,7 +9,7 @@ import { useSpeechRecognition } from "./hooks/useSpeech"
 import { useNavigate } from "react-router-dom"
 import { getToken } from "firebase/messaging"
 import { messaging } from "./firebase"
-
+import UserProfile from "./UserProfile"
 
 
 function Home() {
@@ -21,6 +21,7 @@ function Home() {
     const [voiceId, setvoiceId] = useState('')
     const { transcript, startListening, stopListening, resetTranscript } = useSpeechRecognition()
     const [showModal, setShowModal] = useState(false);
+    const [profilemodel, setShowProfileModal] = useState(false)
     const EIGHT_HOURS = 8 * 60 * 60 * 1000;
 
 
@@ -44,8 +45,8 @@ function Home() {
             const token = await getToken(messaging, { vapidKey: import.meta.env.VITE_CLOUDMESSAGING_PRIVATE_KEY })
             try {
                 await axios.put('/api/user/update', {
-                    usename:localStorage.getItem('username'),
-                    email:localStorage.getItem('email'),
+                    usename: localStorage.getItem('username'),
+                    email: localStorage.getItem('email'),
                     token: token
                 }, { withCredentials: true })
                 localStorage.setItem("tokenSent", "true");
@@ -103,13 +104,13 @@ function Home() {
 
     const detectWakeWord = async () => {
         try {
-            const result = await startListening(); 
+            const result = await startListening();
             console.log('Final Transcript:', result.toLowerCase().trim());
 
             if (!result.trim()) return;
 
             const response = await axios.post('/api/user/wakeup', {
-                text:result.toLowerCase().trim().replaceAll(' ','')
+                text: result.toLowerCase().trim().replaceAll(' ', '')
             }, { withCredentials: true });
 
             if (error.response && error.response.status === 400) {
@@ -202,14 +203,33 @@ function Home() {
         navigate('/chatbot')
     }
 
+    const openProfile = () => {
+        setShowProfileModal(true);
+    };
+
+    const closeProfile = () => {
+        setShowProfileModal(false);
+    };
+    
     return (
         <>
             {showModal === false ? (
                 <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-cyan-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
                     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl p-6 sm:p-8">
 
-                        {/* Header */}
-                        <div className="text-center mb-8">
+                        {/* Header with Profile Button */}
+                        <div className="text-center mb-8 relative">
+                            {/* Profile Button - Top Right */}
+                            <div className="absolute top-0 right-0">
+                                <button
+                                    onClick={openProfile}
+                                    className="group relative overflow-hidden bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                                >
+                                    <FaUser className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200" />
+                                    <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                                </button>
+                            </div>
+
                             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full mb-4 shadow-lg">
                                 <FaCheck className="w-8 h-8 text-white" />
                             </div>
@@ -218,7 +238,6 @@ function Home() {
                             </h1>
                             <p className="text-gray-500 text-sm">Organize your tasks with style</p>
                         </div>
-
                         {/* Add Task Form */}
                         <form onSubmit={addTodo} className="mb-8">
                             <div className="flex flex-col sm:flex-row gap-2 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-lg p-2 sm:p-0 sm:overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -381,6 +400,9 @@ function Home() {
                         </div>
                     </div>
                 </div>
+            )}
+            {profilemodel && (
+                <UserProfile onClose={closeProfile} />
             )}
             <ToastContainer />
         </>

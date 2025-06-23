@@ -2,7 +2,7 @@ import schedule, { cancelJob } from 'node-schedule'
 import { Task } from '../models/task.model.js';
 import { getMessaging } from 'firebase-admin/messaging';
 import { initializeApp, cert } from 'firebase-admin/app';
-import serviseAccount from "../ninja-todo-assistant-firebase-adminsdk-fbsvc-6de157995c.json" with { type: 'json' }
+import serviseAccount from "../fd.json" with { type: 'json' }
 
 initializeApp({
     credential: cert(serviseAccount),

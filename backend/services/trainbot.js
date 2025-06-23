@@ -20,6 +20,22 @@ manager.addDocument('en', 'good evening', 'greetings.hi');
 manager.addDocument('en', 'hey dude', 'greetings.hi');
 manager.addDocument('en', 'hello buddy', 'greetings.hi');
 manager.addDocument('en', 'hi bot', 'greetings.hi');
+manager.addDocument('en', 'what\'s good?','greetings.hi');
+manager.addDocument('en', 'howdy!','greetings.hi');
+manager.addDocument('en', 'yo assistant','greetings.hi');
+manager.addDocument('en', 'sup buddy','greetings.hi');
+manager.addDocument('en', 'hiiiii','greetings.hi');
+manager.addDocument('en', 'hey ninja assistant','greetings.hi');
+manager.addDocument('en', 'greetings!','greetings.hi');
+manager.addDocument('en', 'hola assistant','greetings.hi');
+manager.addDocument('en', 'hello from the other side','greetings.hi');
+manager.addDocument('en', 'what’s going on','greetings.hi');
+manager.addDocument('en', 'hiya!','greetings.hi');
+manager.addDocument('en', 'oh hey','greetings.hi');
+manager.addDocument('en', 'yo there!','greetings.hi');
+manager.addDocument('en', 'hello AI','greetings.hi');
+manager.addDocument('en', 'ninja bot, hi','greetings.hi');
+
 
 manager.addDocument('en', 'how are you', 'user.ask.status');
 manager.addDocument('en', 'how do you feel', 'user.ask.status');
@@ -29,6 +45,17 @@ manager.addDocument('en', 'everything good?', 'user.ask.status');
 manager.addDocument('en', 'you alright?', 'user.ask.status');
 manager.addDocument('en', 'you doing fine?', 'user.ask.status');
 manager.addDocument('en', 'are things okay with you?', 'user.ask.status');
+manager.addDocument('en', 'how are you doing today','user.ask.status');
+manager.addDocument('en', 'feeling good?','user.ask.status');
+manager.addDocument('en', 'you up and running?','user.ask.status');
+manager.addDocument('en', 'still alive, bot?','user.ask.status');
+manager.addDocument('en', 'bot, are you well?','user.ask.status');
+manager.addDocument('en', 'yo ninja, all fine?','user.ask.status');
+manager.addDocument('en', 'everything chill on your end?','user.ask.status');
+manager.addDocument('en', 'hope you’re not tired','user.ask.status');
+manager.addDocument('en', 'is your system okay?','user.ask.status');
+manager.addDocument('en', 'doing okay over there?','user.ask.status');
+
 
 manager.addDocument('en', 'can you help me', 'user.ask.help');
 manager.addDocument('en', 'i need help', 'user.ask.help');
@@ -41,6 +68,17 @@ manager.addDocument('en', 'could you assist me?', 'user.ask.help');
 manager.addDocument('en', 'one problem', 'user.ask.help');
 manager.addDocument('en', 'can i get some help', 'user.ask.help');
 manager.addDocument('en', 'do you know how to help?', 'user.ask.help');
+manager.addDocument('en', 'can you guide me?','user.ask.help');
+manager.addDocument('en', 'what can you help with?','user.ask.help');
+manager.addDocument('en', 'show me what you can do','user.ask.help');
+manager.addDocument('en', 'need a little help here','user.ask.help');
+manager.addDocument('en', 'could you solve a problem for me?','user.ask.help');
+manager.addDocument('en', 'help me understand this','user.ask.help');
+manager.addDocument('en', 'tell me how to do it','user.ask.help');
+manager.addDocument('en', 'walk me through this','user.ask.help');
+manager.addDocument('en', 'assistant, I’m stuck','user.ask.help');
+manager.addDocument('en', 'lost here, can you assist?','user.ask.help');
+
 
 manager.addDocument('en', 'who are you', 'bot.identity');
 manager.addDocument('en', 'what is your name', 'bot.identity');
@@ -49,6 +87,15 @@ manager.addDocument('en', 'tell me about yourself', 'bot.identity');
 manager.addDocument('en', 'what can you tell me about you', 'bot.identity');
 manager.addDocument('en', 'are you human', 'bot.identity');
 manager.addDocument('en', 'describe yourself', 'bot.identity');
+manager.addDocument('en', 'tell me who you are','bot.identity');
+manager.addDocument('en', 'what are you called?','bot.identity');
+manager.addDocument('en', 'do you have a name?','bot.identity');
+manager.addDocument('en', 'what do people call you?','bot.identity');
+manager.addDocument('en', 'are you a ninja?','bot.identity');
+manager.addDocument('en', 'do you work for Naruto?','bot.identity');
+manager.addDocument('en', 'you some kind of assistant?','bot.identity');
+manager.addDocument('en', 'bot, what’s your origin?','bot.identity');
+
 
 manager.addDocument('en', 'goodbye', 'greetings.bye');
 manager.addDocument('en', 'bye', 'greetings.bye');
@@ -60,19 +107,37 @@ manager.addDocument('en', 'peace out', 'greetings.bye');
 manager.addDocument('en', 'i’m leaving', 'greetings.bye');
 manager.addDocument('en', 'see you tomorrow', 'greetings.bye');
 manager.addDocument('en', 'later', 'greetings.bye');
+manager.addDocument('en', 'bye bot','greetings.bye');
+manager.addDocument('en', 'assistant, I’m out','greetings.bye');
+manager.addDocument('en', 'logging off now','greetings.bye');
+manager.addDocument('en', 'talk to you later','greetings.bye');
+manager.addDocument('en', 'done for today','greetings.bye');
+manager.addDocument('en', 'shutting this down','greetings.bye');
+manager.addDocument('en', 'that’s all for now','greetings.bye');
+manager.addDocument('en', 'closing this app','greetings.bye');
+manager.addDocument('en', 'we’ll chat again','greetings.bye');
+manager.addDocument('en', 'gotta go','greetings.bye');
+
 
 manager.addDocument('en','fuck','badword');
 manager.addDocument('en','fucker','badword');
 manager.addDocument('en','mother fucker','badword');
-manager.addDocument('en','assole','badword');
+manager.addDocument('en','asshole','badword');
 manager.addDocument('en','BC','badword');
 manager.addDocument('en','MC','badword');
 manager.addDocument('en','BSDK','badword');
+manager.addDocument('en', 'you idiot', 'badword');
+manager.addDocument('en', 'stupid bot', 'badword');
+manager.addDocument('en', 'you are useless', 'badword');
+manager.addDocument('en', 'dumb assistant', 'badword');
+manager.addDocument('en', 'this is crap', 'badword');
+manager.addDocument('en', 'what the hell', 'badword');
+
 
 manager.addDocument('en', 'I forgot notice', 'user.ask.forgot');
 manager.addDocument('en', 'forgot notice', 'user.ask.forgot');
 manager.addDocument('en', 'can you help to show notice', 'user.ask.forgot');
-manager.addDocument('en', 'I forgot what how to wakeup assistant', 'user.ask.forgot');
+manager.addDocument('en', 'I forgot how to wakeup assistant', 'user.ask.forgot');
 manager.addDocument('en', 'I don’t remember notice', 'user.ask.forgot');
 manager.addDocument('en', 'I can’t remember wakeup words', 'user.ask.forgot');
 manager.addDocument('en', 'help me remember notice', 'user.ask.forgot');
@@ -90,12 +155,28 @@ manager.addDocument('en', 'why ninja assistant not work','user.ask.forgot');
 manager.addDocument('en', 'assistant not give any response','user.ask.forgot');
 manager.addDocument('en' ,'what are wake words','user.ask.forgot');
 manager.addDocument('en' ,'assistant dead','user.ask.forgot');
+manager.addDocument('en', 'I forgot the keyword','user.ask.forgot');
+manager.addDocument('en', 'what do I say to start assistant?','user.ask.forgot');
+manager.addDocument('en', 'wake word? totally slipped my mind','user.ask.forgot');
+manager.addDocument('en', 'remind me how to begin','user.ask.forgot');
+manager.addDocument('en', 'forgot how to call assistant','user.ask.forgot');
+manager.addDocument('en', 'hey, what’s your wake command?','user.ask.forgot');
+manager.addDocument('en', 'what do I speak to start ninja assistant?','user.ask.forgot');
+manager.addDocument('en', 'can’t recall the keyword','user.ask.forgot');
+
 
 manager.addDocument('en','automatic delete my 3 days old tasks','user.ask.autodelete');
 manager.addDocument('en','why my old tasks are not shown','user.ask.autodelete');
 manager.addDocument('en','where is my old tasks','user.ask.autodelete');
 manager.addDocument('en','my old tasks are missing','user.ask.autodelete');
 manager.addDocument('en','missing some tasks','user.ask.autodelete');
+manager.addDocument('en', 'why tasks from 2 days ago disappeared?','user.ask.autodelete');
+manager.addDocument('en', 'are old tasks deleted automatically?','user.ask.autodelete');
+manager.addDocument('en', 'who deleted my previous tasks?','user.ask.autodelete');
+manager.addDocument('en', 'lost my tasks from earlier','user.ask.autodelete');
+manager.addDocument('en', 'cleaned old tasks?','user.ask.autodelete');
+manager.addDocument('en', 'why is my task history gone?','user.ask.autodelete');
+
 
 manager.addAnswer('en', 'greetings.hi', 'Hi! How can I help you today?');
 manager.addAnswer('en', 'greetings.hi', 'Hey, what can I do for you?');

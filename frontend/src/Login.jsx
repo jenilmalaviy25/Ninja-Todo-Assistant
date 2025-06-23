@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa6'
 import { ToastContainer, toast } from 'react-toastify'
@@ -9,6 +9,10 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    useEffect(()=>{
+        localStorage.clear()
+    },[])
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
