@@ -1,11 +1,11 @@
 import axios from "axios"
 import { useState, useEffect, useRef } from "react"
-import { FaRobot, FaUser } from "react-icons/fa6"
+import { FaRobot, FaUser, FaX } from "react-icons/fa6"
 import { IoSparkles } from "react-icons/io5"
 import { MdSend } from "react-icons/md"
 
 
-function ChatBot() {
+function ChatBot({ onClose }) {
     const [chat, setChat] = useState('')
     const [chats, setChats] = useState([])
     const [answers, setAnswers] = useState([])
@@ -35,10 +35,16 @@ function ChatBot() {
 
     return (
         <>
-            <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-cyan-50 flex items-center justify-center p-4">
-                <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md border border-white/20">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/15 backdrop-blur-sm p-2 sm:p-4">
+                <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 w-full max-w-xs sm:max-w-md lg:max-w-lg mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
                     {/* Header */}
                     <div className="p-6 pb-4">
+                        <button
+                            onClick={onClose}
+                            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/20 rounded-full transition-colors duration-200 cursor-pointer"
+                        >
+                            <FaX className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </button>
                         <div className="flex items-center justify-center">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full blur opacity-75 animate-pulse"></div>
@@ -112,9 +118,9 @@ function ChatBot() {
                                 <button
                                     type="submit"
                                     disabled={!chat.trim()}
-                                    className="flex items-center justify-center bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 text-white p-5 cursor-pointer whitespace-nowrap transition-all duration-300 hover:shadow-lg"
+                                    className="flex items-center justify-center bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 text-white px-3 py-5 cursor-pointer whitespace-nowrap transition-all duration-300 hover:shadow-lg"
                                 >
-                                    <MdSend className="w-5 h-5 hover:translate-x-2.5 transition-transform duration-200" />
+                                    <MdSend className="w-5 h-5 sm:w-4 sm:h-4 hover:translate-x-2.5 transition-transform duration-200" />
                                 </button>
                             </div>
                         </form>

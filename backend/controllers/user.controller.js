@@ -93,6 +93,15 @@ export const login = asynchandler(async (req, res) => {
         })
 })
 
+export const logout = asynchandler(async(req,res)=>{
+    return res.status(200)
+    .cookie()
+    .cookie()
+    .json({
+        message:'Logout successfully'
+    })
+})
+
 
 export const usergetById = asynchandler(async (req, res) => {
     const { userId } = req.params
@@ -206,6 +215,21 @@ export const deleteTask = asynchandler(async (req, res) => {
 })
 
 
+export const getUserPogress = asynchandler(async(req,res)=>{
+    const userId = req.user.id
+
+    const totalTask = await Task.countDocuments({userId:userId})
+    const finishedTask = await Task.countDocuments({completed:true,userId:userId})
+
+    const avarage = Math.trunc((finishedTask/totalTask)*100)
+    
+    return res.status(200).json({
+        message:'Fetch user pogress successfully',
+        avarage
+    })
+})
+
+
 // assistant part 
 export const wakeUpAssistant = asynchandler(async (req, res) => {
     const { text } = req.body
@@ -283,7 +307,7 @@ export const crudOfTask = asynchandler(async (req, res) => {
         })
         // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     }
-    else if (task.toLowerCase().includes('my pending tasks')) {
+    else if (task.toLowerCase().includes('my pending tasks') || task.toLowerCase().includes('my tasks')) {
         const tasks = await Task.find({ userId: userId, completed: false, createdAt: { $gt: new Date(year, month, date), $lte: new Date(year, month, date + 1) } })
         const titles = tasks.map((t) => t.title)
         const list = []
@@ -314,6 +338,7 @@ export const crudOfTask = asynchandler(async (req, res) => {
         const charaterResponse = crudResponses.delete[voiceId][index](oldtask.title)
         const voiceBuffer = await getVoiceUrl(charaterResponse, voiceId)
         return res.status(200).json({
+            taskId:oldtask.id,
             message: 'Delete your task successfully',
             title: oldtask.title,
             voiceBuffer

@@ -37,7 +37,7 @@ export const scheduleReminder = (id, task, time, user) => {
         const jobname = task
         schedule.scheduleJob(jobname, reminderDate, async function () {
             let count = 0
-            const maxDuration = 5
+            const maxDuration = 8
             const internal = setInterval(() => {
                 sendNotification(task, user)
                 count += 1
@@ -45,7 +45,7 @@ export const scheduleReminder = (id, task, time, user) => {
                     cancelJob(jobname)
                     clearInterval(internal)
                 }
-            }, 10000)
+            }, 5000)
             await Task.findByIdAndUpdate(id, { $set: { reminded: true } })
         })
     } catch (error) {
