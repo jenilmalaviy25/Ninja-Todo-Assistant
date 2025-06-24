@@ -118,7 +118,7 @@ function ChatBot({ onClose }) {
                                 <button
                                     type="submit"
                                     disabled={!chat.trim()}
-                                    className="flex items-center justify-center bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 text-white px-3 py-5 cursor-pointer whitespace-nowrap transition-all duration-300 hover:shadow-lg"
+                                    className="flex items-center justify-center bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 text-white lg:p-5 px-3 py-5 cursor-pointer whitespace-nowrap transition-all duration-300 hover:shadow-lg"
                                 >
                                     <MdSend className="w-5 h-5 sm:w-4 sm:h-4 hover:translate-x-2.5 transition-transform duration-200" />
                                 </button>

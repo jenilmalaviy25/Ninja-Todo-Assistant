@@ -221,11 +221,11 @@ export const getUserPogress = asynchandler(async(req,res)=>{
     const totalTask = await Task.countDocuments({userId:userId})
     const finishedTask = await Task.countDocuments({completed:true,userId:userId})
 
-    const avarage = Math.trunc((finishedTask/totalTask)*100)
+    const average = totalTask === 0 ? 0 : Math.trunc((finishedTask / totalTask) * 100);
     
     return res.status(200).json({
         message:'Fetch user pogress successfully',
-        avarage
+        avarage:average 
     })
 })
 
@@ -236,9 +236,9 @@ export const wakeUpAssistant = asynchandler(async (req, res) => {
 
     if (!wakeupResponses[text]) throw new ApiError(400, 'Plz speak valid wakeup word');
 
-    const chosen = get_random(wakeupResponses[key].texts);
-    const voiceId = wakeupResponses[key].id
-    const voiceBuffer = await getVoiceUrl(chosen, wakeupResponses[key].id);
+    const chosen = get_random(wakeupResponses[text].texts);
+    const voiceId = wakeupResponses[text].id
+    const voiceBuffer = await getVoiceUrl(chosen, wakeupResponses[text].id);
 
     // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     return res.status(200).json({
@@ -307,14 +307,14 @@ export const crudOfTask = asynchandler(async (req, res) => {
         })
         // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     }
-    else if (task.toLowerCase().includes('my pending tasks') || task.toLowerCase().includes('my tasks')) {
+    else if (task.toLowerCase().includes('my pending task') || task.toLowerCase().includes('my task')) {
         const tasks = await Task.find({ userId: userId, completed: false, createdAt: { $gt: new Date(year, month, date), $lte: new Date(year, month, date + 1) } })
         const titles = tasks.map((t) => t.title)
         const list = []
         for (let i = 0; i < titles.length; i++) {
             list[i] = `${i + 1} is ${titles[i]}`
         }
-        const charaterResponse = crudResponses.mytasks[voiceId][index](list)
+        const charaterResponse = list.length==0 ?'I not get yours pending tasks, first add task.' : crudResponses.mytasks[voiceId][index](list)
         const voiceBuffer = await getVoiceUrl(charaterResponse, voiceId)
         return res.status(200).json({
             message: 'Fetch all current tasks successfully',
@@ -325,7 +325,7 @@ export const crudOfTask = asynchandler(async (req, res) => {
     }
     else if (task.toLowerCase().includes('delete this')) {
         const text = remove('delete this').toLowerCase()
-        const oldtask = await Task.findOne({ title: { $regex: text.trim(), $options: 'i' } })
+        const oldtask = await Task.findOne({ title: { $regex: text.trim(), $options: 'i' } ,userId:userId})
         if (!oldtask) {
             const voiceBuffer = await getVoiceUrl(`Oops! i can't find your task.... so speck exact task title.`, voiceId)
             return res.status(400).json({
@@ -363,8 +363,7 @@ export const AutoDelete = asynchandler(async (req, res) => {
     const month = now.getMonth()
     const year = now.getFullYear()
 
-    const oldtasks = await Task.find({ userId: userId, createdAt: { $gte: new Date(year, month, date - 3), $lte: new Date(year, month, date - 1) } }).select('_id')
-
+    const oldtasks = await Task.find({ userId: userId, createdAt: { $lte: new Date(year, month, date - 3)} }).select('_id')
     if (oldtasks.length > 0) {
         const voices = ['JBFqnCBsd6RMkjVDRZzb', 'WU3NNr4InTpWBvdLxgpD', 'eVItLK1UvXctxuaRV2Oq', 'WTUK291rZZ9CLPCiFTfh']
         const Index = Math.floor((Math.random() * voices.length))

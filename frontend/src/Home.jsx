@@ -36,12 +36,13 @@ function Home() {
             localStorage.setItem("lastModalShown", now.toString());
         }
         requestPermission()
-        fetchTodos();
+        fetchTodos()
     }, []);
 
     async function requestPermission() {
         const alreadySent = localStorage.getItem("tokenSent");
         if (alreadySent === "true") return;
+        await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => { });
 
         const permission = await Notification.requestPermission()
         if (permission === 'granted') {
@@ -61,15 +62,14 @@ function Home() {
     }
 
     const closeModal = async () => {
-        setShowModal(false);
         try {
+            setShowModal(false);
             detectWakeWord();
             const response = await axios.post('/api/user/auto', {}, { withCredentials: true })
-            if (!response.data.voiceBuffer) return;
-            else {
-                const audio = new Audio(response.data.voiceBuffer.data)
-                await audio.play()
-            }
+            const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
+            const audio = new Audio(audioSrc);
+            await audio.play();
+            fetchTodos();
         } catch (error) {
             console.log(error)
         }
@@ -106,11 +106,12 @@ function Home() {
                 setTodos([...todos, response.data.newtask])
                 setNewTodo('')
             }
-            else if (final.includes('delete this')) {
-                setTodos(todos.filter((task) => task.id !== response.data.taskId))
+            else if (final.includes('delete')) {
+                setTodos(todos.filter((task) => task._id !== response.data.taskId))
             }
-            const audio = new Audio(response.data.voiceBuffer.data)
-            await audio.play()
+            const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
+            const audio = new Audio(audioSrc);
+            await audio.play();
         } catch (error) {
             console.log('Error todo:', error)
         } finally {
@@ -130,17 +131,11 @@ function Home() {
     const detectWakeWord = async () => {
         try {
             const result = await startListening();
-            console.log('Final Transcript:', result.toLowerCase().trim());
-
             if (!result.trim()) return;
 
             const response = await axios.post('/api/user/wakeup', {
                 text: result.toLowerCase().trim().replaceAll(' ', '')
             }, { withCredentials: true });
-
-            if (error.response && error.response.status === 400) {
-                toast.error(error.response.data.message || "Bad Request");
-            }
 
             setTimeout(() => {
                 stopListening()
@@ -148,9 +143,9 @@ function Home() {
 
             if (response.data.voiceId) {
                 setvoiceId(response.data.voiceId);
-                const audio = new Audio(response.data.voiceBuffer.data);
+                const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
+                const audio = new Audio(audioSrc);
                 await audio.play();
-
                 toast.success('Assistant wakeup successfully')
             }
             else {
@@ -278,6 +273,8 @@ function Home() {
                                     className="flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-3 transition-all duration-300 hover:shadow-lg group flex-shrink-0 rounded-xl sm:rounded-none sm:rounded-l-xl"
                                     onMouseDown={recordingVoice}
                                     onMouseUp={stopandsendrecording}
+                                    onKeyDown={recordingVoice}
+                                    onKeyUp={stopandsendrecording}
                                 >
                                     <FaMicrophone className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200" />
                                 </button>
