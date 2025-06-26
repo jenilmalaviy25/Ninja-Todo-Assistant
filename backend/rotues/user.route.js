@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTask, AutoDelete, crudOfTask, deleteTask, getTaskById, getUserAllTask, getUserPogress, login, logout, register, updateprofile, updateStatus, usergetById, wakeUpAssistant } from "../controllers/user.controller.js";
+import { addTask, AutoDelete, crudOfTask, deleteTask, getTaskById, getUserAllTask, getUserPogress, login, logout, register, updateprofile, updateStatus, updateTask, usergetById, wakeUpAssistant } from "../controllers/user.controller.js";
 import { verifyjwt } from "../middlewares/verifyjwt.js";
 import { botresponce } from "../services/trainbot.js";
 
@@ -17,6 +17,7 @@ userRoute.route('/').get(verifyjwt,getUserAllTask)
 userRoute.route('/:taskId').get(verifyjwt,getTaskById)
 userRoute.route('/:taskId').delete(verifyjwt,deleteTask)
 userRoute.route('/:taskId').put(verifyjwt,updateStatus)
+userRoute.route('/updatetask').post(verifyjwt,updateTask)
 userRoute.route('/pogress').post(verifyjwt,getUserPogress)
 
 //assistant part 

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'react-hot-toast'
 import axios from 'axios'
-import { FaTrash, FaMicrophone, FaRobot, FaCheck, FaPlus, FaX, FaUser } from 'react-icons/fa6'
-import { MdOutlineDone } from 'react-icons/md'
-import { IoClose, IoSparkles } from 'react-icons/io5'
+import { FaTrash, FaMicrophone, FaRobot, FaCheck, FaPlus, FaX, FaUser, FaTrophy } from 'react-icons/fa6'
+import { IoSparkles } from 'react-icons/io5'
 import { MdModeEditOutline } from "react-icons/md"
 import { useSpeechRecognition } from "./hooks/useSpeech"
-import { useNavigate } from "react-router-dom"
 import { getToken } from "firebase/messaging"
 import { messaging } from "./firebase"
 import UserProfile from "./UserProfile"
@@ -14,7 +12,6 @@ import ChatBot from "./ChatBot"
 
 
 function Home() {
-    const navigate = useNavigate()
     const [newTodo, setNewTodo] = useState('')
     const [todos, setTodos] = useState([])
     const [editTodo, setEditTodo] = useState(null)
@@ -24,6 +21,10 @@ function Home() {
     const [showModal, setShowModal] = useState(false);
     const [profilemodel, setShowProfileModal] = useState(false)
     const [openBot, setOPenBot] = useState(false)
+    const [completedTasks, setCompletedTask] = useState(0)
+    const [totalTasks, setTotaltasks] = useState(0)
+    const [avarage, setAvarage] = useState(0)
+    const [voice, setVoice] = useState(0)
     const EIGHT_HOURS = 60 * 60 * 1000;
 
 
@@ -37,6 +38,7 @@ function Home() {
         }
         requestPermission()
         fetchTodos()
+        taskPogress()
     }, []);
 
     async function requestPermission() {
@@ -71,6 +73,7 @@ function Home() {
             await audio.play();
             fetchTodos();
         } catch (error) {
+            toast.error(error.response?.data.message)
             console.log(error)
         }
     };
@@ -83,6 +86,11 @@ function Home() {
     const stopandsendrecording = async () => {
         stopListening()
         if (!transcript.trim()) return
+        if (transcript.includes('wake up')) {
+            toast('Wakeup assistanat again', { icon: <FaTrophy /> })
+            detectWakeWord()
+            return
+        }
         const final = transcript.replace(/\b(\d{3,4})\s*(am|pm)\b/gi, (_, time, meridiem) => {
             let hours, minutes;
 
@@ -113,6 +121,7 @@ function Home() {
             const audio = new Audio(audioSrc);
             await audio.play();
         } catch (error) {
+            toast.error(error.response?.data.message)
             console.log('Error todo:', error)
         } finally {
             resetTranscript()
@@ -141,18 +150,15 @@ function Home() {
                 stopListening()
             }, 10000)
 
-            if (response.data.voiceId) {
-                setvoiceId(response.data.voiceId);
-                const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
-                const audio = new Audio(audioSrc);
-                await audio.play();
-                toast.success('Assistant wakeup successfully')
-            }
-            else {
-                toast.error('Reload webpage to access ninja assistant services')
-            }
+            setvoiceId(response.data.voiceId);
+            setVoice(response.data.voiceBuffer)
+            const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
+            const audio = new Audio(audioSrc);
+            await audio.play();
+            toast.success('Assistant wakeup successfully')
+
         } catch (error) {
-            toast.error("Something went wrong!");
+            toast.error(error.response?.data.message);
             console.error("Error detecting wake word:", error);
         }
     };
@@ -167,6 +173,8 @@ function Home() {
             })
             setTodos([...todos, response.data.newtask])
             setNewTodo('')
+            taskPogress()
+            toast.success(response.data.message)
         } catch (error) {
             console.log('Error adding todo:', error)
         }
@@ -183,12 +191,16 @@ function Home() {
 
     const saveEdit = async (id) => {
         try {
-            const response = await axios.put(`/api/user/${id}`, {
-                task: editedTodoTitle
+            const response = await axios.post('/api/user/updatetask', {
+                taskId: id,
+                title: editedTodoTitle.trim()
             }, { withCredentials: true })
-            setTodos(todos.map((todo) => (todo._id === id ? response.data : todo)))
+            setTodos(todos.map((todo) => (todo._id === id ? response.data.existTask : todo)))
             setEditTodo(null)
+            setEditingTodoTitle('')
+            toast.success(response.data.message)
         } catch (error) {
+            toast.error(error.response?.data.message)
             console.log('Error is', error)
         }
     }
@@ -198,6 +210,7 @@ function Home() {
             await axios.delete(`/api/user/${id}`, { withCredentials: true })
             setTodos(todos.filter((todo) => todo._id !== id))
             toast.success('Task delete successfully')
+            taskPogress()
         } catch (error) {
             console.log('delete todo:', error)
             toast.error('First complete task')
@@ -209,9 +222,27 @@ function Home() {
             const todo = todos.find((t) => t._id === id)
             const response = await axios.put(`/api/user/${id}`, { withCredentials: true })
             setTodos(todos.map((t) => t._id === id ? response.data.task : t))
+            taskPogress()
         } catch (error) {
             console.log('Error is:', error)
         }
+    }
+
+    async function taskPogress() {
+        try {
+            const response = await axios.post('/api/user/pogress', {}, { withCredentials: true })
+            setAvarage(response.data.avarage)
+            setTotaltasks(response.data.totalTask)
+            setCompletedTask(response.data.finishedTask)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const playsound = () => {
+        const audioSrc = `data:audio/mpeg;base64,${voice}`;
+        const audio = new Audio(audioSrc);
+        audio.play();
     }
 
     const openbot = () => {
@@ -247,14 +278,31 @@ function Home() {
                                 <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
                             </button>
                         </div>
-
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full mb-4 shadow-lg">
-                            <FaCheck className="w-8 h-8 text-white" />
-                        </div>
+                        <button className=" w-16 h-16 items-center mb-4 cursor-pointer transition-all duration-300 hover:scale-110 group" onClick={playsound}>
+                            <img src="/ninjalogo.png" className=" group-hover:rotate-12 transition-transform duration-200" />
+                        </button>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent font-bold mb-2">
                             Ninja Todo
                         </h1>
                         <p className="text-gray-500 text-sm">Organize your tasks with style</p>
+                        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200/50 shadow-sm mt-4 mb-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700">
+                                    {completedTasks}/{totalTasks} tasks
+                                </span>
+                                <span className="text-sm font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+                                    {avarage}%
+                                </span>
+                            </div>
+
+                            {/* Compact Progress Bar */}
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                    className="h-full bg-gradient-to-r from-violet-500 to-blue-500 rounded-full transition-all duration-500 ease-out"
+                                    style={{ width: `${avarage}%` }}
+                                />
+                            </div>
+                        </div>
                     </div>
                     {/* Add Task Form */}
                     <form onSubmit={addTodo} className="mb-8">
@@ -302,26 +350,28 @@ function Home() {
                             <div className="space-y-3">
                                 {todos.map((todo) => (
                                     <div key={todo._id} className="animate-fade-in">
-                                        {editTodo === todo.title ? (
-                                            <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-lg">
+                                        {editTodo === todo._id ? (
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-lg">
                                                 <input
                                                     className="flex-1 p-3 border border-gray-300/50 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 text-gray-600 bg-white/80 backdrop-blur-sm"
                                                     type="text"
-                                                    value={editTodo}
-                                                    onChange={(e) => setEditTodo(e.target.value)}
+                                                    value={editedTodoTitle}
+                                                    onChange={(e) => setEditingTodoTitle(e.target.value)}
                                                 />
-                                                <button
-                                                    className="p-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105"
-                                                    onClick={() => saveEdit(todo._id)}
-                                                >
-                                                    <FaCheck className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    className="p-3 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105"
-                                                    onClick={() => setEditTodo(null)}
-                                                >
-                                                    <FaX className="w-4 h-4" />
-                                                </button>
+                                                <div className="flex gap-3 sm:gap-2">
+                                                    <button
+                                                        className="flex-1 sm:flex-none p-3 bg-gradient-to-r from-green-400 to-green-300 text-white rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105"
+                                                        onClick={() => saveEdit(todo._id)}
+                                                    >
+                                                        <FaCheck className="w-4 h-4 mx-auto" />
+                                                    </button>
+                                                    <button
+                                                        className="flex-1 sm:flex-none p-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 hover:shadow-lg transition-all duration-200 hover:scale-105"
+                                                        onClick={() => setEditTodo(null)}
+                                                    >
+                                                        <FaX className="w-4 h-4 mx-auto" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         ) : (
                                             <div className="flex items-center justify-between gap-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 group">
@@ -335,7 +385,7 @@ function Home() {
                                                     >
                                                         {todo.completed && <FaCheck className="w-3 h-3 text-white" />}
                                                     </button>
-                                                    <span className={`text-gray-800 font-medium truncate ${todo.completed ? 'line-through opacity-60' : ''} transition-all duration-200`}>
+                                                    <span className={`text-gray-800 text-pretty font-medium truncate ${todo.completed ? 'line-through opacity-60' : ''} transition-all duration-200`}>
                                                         {todo.title}
                                                     </span>
                                                 </div>
@@ -398,15 +448,16 @@ function Home() {
                             <div>
                                 <h4 className="font-semibold text-violet-600 mb-1">2. Wakeup Words</h4>
                                 <p className="leading-relaxed">
-                                    Use any of the following wakeup words to start a conversation with the assistant:
+                                    Use any of the following wakeup words to start a conversation with the ninja assistant:
                                 </p>
                                 <ul className="list-disc list-inside pl-4">
-                                    <li><code className="text-blue-600 font-medium">oknaruto</code></li>
-                                    <li><code className="text-blue-600 font-medium">okhinata</code></li>
-                                    <li><code className="text-blue-600 font-medium">okjiraiya</code></li>
+                                    <li><code className="text-blue-600 font-medium">ok naruto</code></li>
+                                    <li><code className="text-blue-600 font-medium">ok hinata</code></li>
+                                    <li><code className="text-blue-600 font-medium">ok jiraiya</code></li>
                                 </ul>
-                                <p className="mt-2">⏳ You’ll have <strong>10 seconds</strong> to say the wakeup word after the mic activates.</p>
-                                <p className="italic text-gray-500 text-sm">Note: Wakeup words only activate the assistant. Give your command afterward.</p>
+                                <p className="mt-2">⏳ You’ll have <strong>10 seconds</strong> to say the wakeup word after the assistant activate.</p>
+                                <p className="mt-2">When you fail to wakeup assistant, speck 'wakeup' in mic get again <strong>10 seconds</strong> to say the wakeup word after the assistant activate.</p>
+                                <p className="italic text-gray-500 text-sm">Note: Wakeup words only activate the ninja assistant. Give your command afterward.</p>
                             </div>
 
                             <div className="p-4 bg-gradient-to-br from-blue-50 via-white to-blue-50 border border-blue-200 rounded-xl shadow-inner space-y-2">
@@ -479,7 +530,7 @@ function Home() {
             {profilemodel && (
                 <UserProfile onClose={closeProfile} />
             )}
-            <ToastContainer />
+            <Toaster position="top-center" reverseOrder={false} />
         </>
     )
 }

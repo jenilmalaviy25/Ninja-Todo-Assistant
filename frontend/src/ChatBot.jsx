@@ -54,7 +54,7 @@ function ChatBot({ onClose }) {
                             </div>
                             <div className="ml-4">
                                 <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
-                                    AI Assistant
+                                    Ninja Chatbot
                                 </h1>
                                 <div className="flex items-center space-x-1 text-sm text-gray-500">
                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -78,7 +78,7 @@ function ChatBot({ onClose }) {
                                     {/* User message */}
                                     <div className="flex items-start justify-end space-x-3">
                                         <div className="bg-gradient-to-r from-violet-500 to-blue-500 text-white p-4 rounded-2xl rounded-tr-md shadow-lg max-w-[85%] animate-fade-in">
-                                            <p className="text-sm leading-relaxed">{msg}</p>
+                                            <p className="text-sm text-pretty leading-relaxed">{msg}</p>
                                         </div>
                                         <div className="flex-shrink-0">
                                             <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full flex items-center justify-center">
@@ -95,7 +95,7 @@ function ChatBot({ onClose }) {
                                             </div>
                                         </div>
                                         <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 text-gray-800 p-4 rounded-2xl rounded-tl-md shadow-lg max-w-[85%] animate-fade-in">
-                                            <p className="text-sm leading-relaxed">{answers[idx]}</p>
+                                            <p className="text-sm text-pretty leading-relaxed">{answers[idx]}</p>
                                         </div>
                                     </div>
                                 </div>

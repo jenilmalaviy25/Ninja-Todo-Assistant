@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa6'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'react-hot-toast'
 import axios from 'axios';
 
 function Login() {
@@ -107,7 +107,7 @@ function Login() {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            <Toaster position="top-center" reverseOrder={false} />
         </>
     );
 };

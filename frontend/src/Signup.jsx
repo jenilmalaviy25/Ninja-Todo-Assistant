@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Link,useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { MdEmail, MdLock } from 'react-icons/md'
-import { FaUser} from 'react-icons/fa6'
-import { ToastContainer, toast } from 'react-toastify'
+import { FaUser } from 'react-icons/fa6'
+import { Toaster, toast } from 'react-hot-toast'
 import axios from 'axios'
 
 
@@ -14,29 +14,29 @@ function Signup() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [load,setLoad] = useState(false)
+    const [load, setLoad] = useState(false)
 
     const register = async (e) => {
         e.preventDefault();
         setLoad(true)
         const emailvalida = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if(!emailvalida.test(email)) toast.error('Plz enter valid email')
-        if(password.length < 4) toast.error('Plz add few words in password')
+        if (!emailvalida.test(email)) toast.error('Plz enter valid email')
+        if (password.length < 4) toast.error('Plz add few words in password')
         try {
-            const response = await axios.post('/api/user/register',{
-                username:username,
-                email:email,
-                password:password
+            const response = await axios.post('/api/user/register', {
+                username: username,
+                email: email,
+                password: password
             })
             toast.success(response?.data?.message || 'Account create successfull')
-            if(response.status === 200) {
+            if (response.status === 200) {
                 navigate('/')
             }
             else throw new Error(response.data.message)
         } catch (error) {
             console.log(error)
             toast.error(error.response?.data?.message)
-        }finally{
+        } finally {
             setLoad(false)
         }
     }
@@ -134,7 +134,7 @@ function Signup() {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            <Toaster position="top-center" reverseOrder={false} />
         </>
     )
 }

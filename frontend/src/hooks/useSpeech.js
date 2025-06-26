@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 export const useSpeechRecognition = () => {
     const [transcript, setTranscript] = useState('');

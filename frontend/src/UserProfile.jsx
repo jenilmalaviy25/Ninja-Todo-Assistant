@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaX, FaUser, FaGlobe, FaCheck, FaBarsProgress } from 'react-icons/fa6'
 import { IoLogInOutline } from 'react-icons/io5';
 import { MdEdit } from 'react-icons/md';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
 const UserProfile = ({ onClose }) => {
@@ -13,23 +13,12 @@ const UserProfile = ({ onClose }) => {
     const [isEditing, setEditing] = useState(false)
     const [tempusername, setTempname] = useState('')
     const [tempemail, setTempemail] = useState('')
-    const [avg, setAvg] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
         setUsername(localStorage.getItem('username'))
         setEmail(localStorage.getItem('email'))
-        taskPogress()
     }, [])
-
-    async function taskPogress() {
-        try {
-            const response = await axios.post('/api/user/pogress', {}, { withCredentials: true })
-            setAvg(response.data.avarage)
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     const handleEdit = () => {
         setEditing(true)
@@ -50,6 +39,7 @@ const UserProfile = ({ onClose }) => {
             localStorage.setItem('email', response.data.user.email)
             toast.success(response.data.message)
         } catch (error) {
+            toast.error(error.response?.data.message)
             console.log('Error is:', error)
         }
     }
@@ -162,14 +152,6 @@ const UserProfile = ({ onClose }) => {
 
                         {/* Settings Section */}
                         <div className="space-y-3 sm:space-y-4">
-                            <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-100/50 rounded-lg hover:bg-gray-100/50 transition-colors duration-200">
-                                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                                    <FaBarsProgress className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500 flex-shrink-0" />
-                                    <span className="text-gray-700 font-medium text-sm sm:text-base truncate">Task Progress</span>
-                                </div>
-                                <span className={` font-medium text-sm sm:text-base truncate ${avg < 50 ? 'text-red-600' : 'text-gray-700'}`}>{avg}%</span>
-                            </div>
-
                             <button
                                 className="w-full flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200 mt-4 sm:mt-8 text-sm sm:text-base"
                                 onClick={logout}

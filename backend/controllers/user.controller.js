@@ -81,7 +81,7 @@ export const login = asynchandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite:'Lax'
+        sameSite: 'Lax'
     }
 
     return res.status(200)
@@ -93,13 +93,13 @@ export const login = asynchandler(async (req, res) => {
         })
 })
 
-export const logout = asynchandler(async(req,res)=>{
+export const logout = asynchandler(async (req, res) => {
     return res.status(200)
-    .cookie()
-    .cookie()
-    .json({
-        message:'Logout successfully'
-    })
+        .cookie()
+        .cookie()
+        .json({
+            message: 'Logout successfully'
+        })
 })
 
 
@@ -126,9 +126,9 @@ export const updateprofile = asynchandler(async (req, res) => {
         if (existuser.email === email && existuser.id !== userId) throw new ApiError(400, 'User already exist with this email')
         if (existuser.username === username && existuser.id !== userId) throw new ApiError(400, 'User already exist with this username')
     }
-    const user = await User.findByIdAndUpdate(userId, {$set:{email:email.toLowerCase(),username,deviceToken:token}},{new:true})
+    const user = await User.findByIdAndUpdate(userId, { $set: { email: email.toLowerCase(), username, deviceToken: token } }, { new: true })
     return res.status(200).json({
-        message: 'Update user successfully',
+        message: 'Userprofile update successfully',
         user
     })
 })
@@ -150,7 +150,7 @@ export const addTask = asynchandler(async (req, res) => {
     })
     if (time) {
         humandate = new Date(time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true })
-        scheduleReminder(newtask.id, task, time,user)
+        scheduleReminder(newtask.id, task, time, user)
     }
     return res.status(200).json({
         message: 'Task add successfully',
@@ -199,6 +199,33 @@ export const updateStatus = asynchandler(async (req, res) => {
     })
 })
 
+export const updateTask = asynchandler(async (req, res) => {
+    const { taskId, title } = req.body
+    const userId = req.user.id
+    const user = req.user
+
+    if ([taskId, title].some(field => field === '')) throw new ApiError(400, 'Please fill all field')
+
+    const existTask = await Task.findOne({ _id: taskId, userId: userId})
+    if (!existTask) throw new ApiError(400, 'Task not fdound with given id')
+
+    if(existTask.completed===true) throw new ApiError(400,'Not update completed task')
+
+    const time = parseDate(title)
+    if (time) {
+        scheduleReminder(existTask.id, title, time, user)
+    }
+
+    existTask.title = title
+    existTask.remindAt = time ?? null
+    existTask.save()
+
+    return res.status(200).json({
+        message:'Task update successfully',
+        existTask
+    })
+})
+
 export const deleteTask = asynchandler(async (req, res) => {
     const { taskId } = req.params
     if (!taskId) throw new ApiError(400, 'Task id must required')
@@ -215,17 +242,19 @@ export const deleteTask = asynchandler(async (req, res) => {
 })
 
 
-export const getUserPogress = asynchandler(async(req,res)=>{
+export const getUserPogress = asynchandler(async (req, res) => {
     const userId = req.user.id
 
-    const totalTask = await Task.countDocuments({userId:userId})
-    const finishedTask = await Task.countDocuments({completed:true,userId:userId})
+    const totalTask = await Task.countDocuments({ userId: userId })
+    const finishedTask = await Task.countDocuments({ completed: true, userId: userId })
 
     const average = totalTask === 0 ? 0 : Math.trunc((finishedTask / totalTask) * 100);
-    
+
     return res.status(200).json({
-        message:'Fetch user pogress successfully',
-        avarage:average 
+        message: 'Fetch user pogress successfully',
+        totalTask:totalTask ?? 0,
+        finishedTask:finishedTask ?? 0,
+        avarage: average
     })
 })
 
@@ -240,9 +269,8 @@ export const wakeUpAssistant = asynchandler(async (req, res) => {
     const voiceId = wakeupResponses[text].id
     const voiceBuffer = await getVoiceUrl(chosen, wakeupResponses[text].id);
 
-    // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     return res.status(200).json({
-        message:'Assistant wakeup successfully',
+        message: 'Assistant wakeup successfully',
         voiceId,
         voiceBuffer
     })
@@ -270,7 +298,6 @@ export const crudOfTask = asynchandler(async (req, res) => {
             message: 'Yesterday pending tasks',
             voiceBuffer
         })
-        // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     }
 
     function remove(keyword) {
@@ -297,7 +324,7 @@ export const crudOfTask = asynchandler(async (req, res) => {
         ])
         if (time) {
             humandate = new Date(time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true })
-            scheduleReminder(newtask.id, tasktitle, time,user)
+            scheduleReminder(newtask.id, tasktitle, time, user)
         }
         return res.status(200).json({
             message: 'Add task successfully',
@@ -305,7 +332,6 @@ export const crudOfTask = asynchandler(async (req, res) => {
             humandate: time ? humandate : null,
             voiceBuffer
         })
-        // return res.status(200).setHeader('Content-Type', 'audio/mpeg').send(voiceBuffer);
     }
     else if (task.toLowerCase().includes('my pending task') || task.toLowerCase().includes('my task')) {
         const tasks = await Task.find({ userId: userId, completed: false, createdAt: { $gt: new Date(year, month, date), $lte: new Date(year, month, date + 1) } })
@@ -314,36 +340,33 @@ export const crudOfTask = asynchandler(async (req, res) => {
         for (let i = 0; i < titles.length; i++) {
             list[i] = `${i + 1} is ${titles[i]}`
         }
-        const charaterResponse = list.length==0 ?'I not get yours pending tasks, first add task.' : crudResponses.mytasks[voiceId][index](list)
+        const charaterResponse = list.length == 0 ? 'I not get yours pending tasks, first add task.' : crudResponses.mytasks[voiceId][index](list)
         const voiceBuffer = await getVoiceUrl(charaterResponse, voiceId)
         return res.status(200).json({
             message: 'Fetch all current tasks successfully',
             list,
             voiceBuffer
         })
-        // return res.status(200).setHeader('Content-Type','audio/mpeg').send(voiceBuffer)
     }
     else if (task.toLowerCase().includes('delete this')) {
         const text = remove('delete this').toLowerCase()
-        const oldtask = await Task.findOne({ title: { $regex: text.trim(), $options: 'i' } ,userId:userId})
+        const oldtask = await Task.findOne({ title: { $regex: text.trim(), $options: 'i' }, userId: userId })
         if (!oldtask) {
             const voiceBuffer = await getVoiceUrl(`Oops! i can't find your task.... so speck exact task title.`, voiceId)
             return res.status(400).json({
                 message: 'Failed to find task',
                 voiceBuffer
             })
-            // return res.status(200).setHeader('Content-Type','audio/mpeg').send(voiceBuffer)
         }
         await Task.deleteOne({ _id: oldtask.id })
         const charaterResponse = crudResponses.delete[voiceId][index](oldtask.title)
         const voiceBuffer = await getVoiceUrl(charaterResponse, voiceId)
         return res.status(200).json({
-            taskId:oldtask.id,
+            taskId: oldtask.id,
             message: 'Delete your task successfully',
             title: oldtask.title,
             voiceBuffer
         })
-        // return res.status(200).setHeader('Content-Type','audio/mpeg').send(voiceBuffer)
     }
     else {
         const charaterResponse = crudResponses.other[voiceId][index]
@@ -352,7 +375,6 @@ export const crudOfTask = asynchandler(async (req, res) => {
             message: 'Oops! wrong starting word',
             voiceBuffer
         })
-        // return res.status(200).setHeader('Content-Type','audio/mpeg').send(voiceBuffer)
     }
 })
 
@@ -363,7 +385,7 @@ export const AutoDelete = asynchandler(async (req, res) => {
     const month = now.getMonth()
     const year = now.getFullYear()
 
-    const oldtasks = await Task.find({ userId: userId, createdAt: { $lte: new Date(year, month, date - 3)} }).select('_id')
+    const oldtasks = await Task.find({ userId: userId, createdAt: { $lte: new Date(year, month, date - 3) } }).select('_id')
     if (oldtasks.length > 0) {
         const voices = ['JBFqnCBsd6RMkjVDRZzb', 'WU3NNr4InTpWBvdLxgpD', 'eVItLK1UvXctxuaRV2Oq', 'WTUK291rZZ9CLPCiFTfh']
         const Index = Math.floor((Math.random() * voices.length))
@@ -373,7 +395,7 @@ export const AutoDelete = asynchandler(async (req, res) => {
         await Task.deleteMany({ _id: { $in: oldtasks } })
 
         const charaterResponse = autodeleteResponses[voiceId][index](oldtasks.length)
-        const voiceBuffer = await getVoiceUrl(charaterResponse,voiceId)
+        const voiceBuffer = await getVoiceUrl(charaterResponse, voiceId)
         return res.status(200).json({
             message: `Delete your 3 day's old ${oldtasks.length} tasks successfully`,
             voiceBuffer
