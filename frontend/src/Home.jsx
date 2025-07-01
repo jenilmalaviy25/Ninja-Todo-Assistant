@@ -50,7 +50,7 @@ function Home() {
         if (permission === 'granted') {
             const token = await getToken(messaging, { vapidKey: import.meta.env.VITE_CLOUDMESSAGING_PRIVATE_KEY })
             try {
-                await axios.put('/api/user/update', {
+                await axios.put(`${import.meta.env.BACKEND_URL}/api/user/update`, {
                     usename: localStorage.getItem('username'),
                     email: localStorage.getItem('email'),
                     token: token
