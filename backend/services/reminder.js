@@ -2,22 +2,26 @@ import schedule, { cancelJob } from 'node-schedule'
 import { Task } from '../models/task.model.js';
 import { getMessaging } from 'firebase-admin/messaging';
 import { initializeApp, cert } from 'firebase-admin/app';
-import serviseAccount from "../fd.json" with { type: 'json' }
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const firebaseConfigJson = JSON.parse(
+    Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf-8')
+);
 
 initializeApp({
-    credential: cert(serviseAccount),
+    credential: cert(firebaseConfigJson),
 });
 
 export const sendNotification = (task, user) => {
     const message = {
-        notification: {
+        data:{
             title: 'Task Reminder',
             body: task,
         },
         token: user.deviceToken
     };
-
-
     getMessaging().send(message)
         .then((response) => {
             console.log('Successfully sent message:', response);
