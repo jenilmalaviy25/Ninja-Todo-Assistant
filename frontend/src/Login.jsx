@@ -16,7 +16,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/api/user/login', {
+            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/login`, {
                 username: username,
                 password: password
             })

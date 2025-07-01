@@ -28,7 +28,7 @@ const UserProfile = ({ onClose }) => {
 
     const handleSave = async () => {
         try {
-            const response = await axios.put('/api/user/update', {
+            const response = await axios.put(`${import.meta.env.BACKEND_URL}/api/user/update`, {
                 username: tempusername,
                 email: tempemail
             }, { withCredentials: true })

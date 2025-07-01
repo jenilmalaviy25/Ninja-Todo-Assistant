@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(),tailwindcss()],
   server:{
     proxy:{
-      '/api':{target:'https://ninja-todo-assistant.onrender.com'}
+      '/api':{target:'http://localhost:7123'}
     }
   }
 })
