@@ -21,23 +21,25 @@ function Signup() {
         setLoad(true)
         const emailvalida = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailvalida.test(email)) toast.error('Plz enter valid email')
-        if (password.length < 4) toast.error('Plz add few words in password')
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
-                username: username,
-                email: email,
-                password: password
-            })
-            toast.success(response?.data?.message || 'Account create successfull')
-            if (response.status === 200) {
-                navigate('/')
+        else if (password.length < 4) toast.error('Plz add few words in password')
+        else {
+            try {
+                const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
+                    username: username,
+                    email: email,
+                    password: password
+                })
+                toast.success(response?.data?.message || 'Account create successfull')
+                if (response.status === 200) {
+                    navigate('/')
+                }
+                else throw new Error(response.data.message)
+            } catch (error) {
+                console.log(error)
+                toast.error(error.response?.data?.message)
+            } finally {
+                setLoad(false)
             }
-            else throw new Error(response.data.message)
-        } catch (error) {
-            console.log(error)
-            toast.error(error.response?.data?.message)
-        } finally {
-            setLoad(false)
         }
     }
 
