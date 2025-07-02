@@ -50,7 +50,7 @@ function Home() {
         if (permission === 'granted') {
             const token = await getToken(messaging, { vapidKey: import.meta.env.VITE_CLOUDMESSAGING_PRIVATE_KEY })
             try {
-                await axios.put(`${import.meta.env.BACKEND_URL}/api/user/update`, {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/user/update`, {
                     usename: localStorage.getItem('username'),
                     email: localStorage.getItem('email'),
                     token: token
@@ -67,7 +67,7 @@ function Home() {
         try {
             setShowModal(false);
             detectWakeWord();
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/auto`, {}, { withCredentials: true })
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/auto`, {}, { withCredentials: true })
             const audioSrc = `data:audio/mpeg;base64,${response.data.voiceBuffer}`;
             const audio = new Audio(audioSrc);
             await audio.play();
@@ -105,7 +105,7 @@ function Home() {
             return `${hours}:${minutes} ${meridiem.toLowerCase()}`;
         });
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/crudtask`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/crudtask`, {
                 task: final.replaceAll('and', ','),
                 voiceId: voiceId
             }, { withCredentials: true })
@@ -130,7 +130,7 @@ function Home() {
 
     const fetchTodos = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.BACKEND_URL}/api/user/`, { withCredentials: true })
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, { withCredentials: true })
             setTodos(response.data.allTasks)
         } catch (error) {
             console.log('Error fetching todos:', error)
@@ -142,7 +142,7 @@ function Home() {
             const result = await startListening();
             if (!result.trim()) return;
 
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/wakeup`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/wakeup`, {
                 text: result.toLowerCase().trim().replaceAll(' ', '')
             }, { withCredentials: true });
 
@@ -167,7 +167,7 @@ function Home() {
         e.preventDefault()
         if (!newTodo.trim()) return
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/add`,
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/add`,
                 { task: newTodo }, {
                 withCredentials: true
             })
@@ -191,7 +191,7 @@ function Home() {
 
     const saveEdit = async (id) => {
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/updatetask`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/updatetask`, {
                 taskId: id,
                 title: editedTodoTitle.trim()
             }, { withCredentials: true })
@@ -207,7 +207,7 @@ function Home() {
 
     const deleteTodo = async (id) => {
         try {
-            await axios.delete(`${import.meta.env.BACKEND_URL}/api/user/${id}`, { withCredentials: true })
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/user/${id}`, { withCredentials: true })
             setTodos(todos.filter((todo) => todo._id !== id))
             toast.success('Task delete successfully')
             taskPogress()
@@ -220,7 +220,7 @@ function Home() {
     const toggleTodo = async (id) => {
         try {
             const todo = todos.find((t) => t._id === id)
-            const response = await axios.put(`${import.meta.env.BACKEND_URL}/api/user/${id}`, { withCredentials: true })
+            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/user/${id}`, { withCredentials: true })
             setTodos(todos.map((t) => t._id === id ? response.data.task : t))
             taskPogress()
         } catch (error) {
@@ -230,7 +230,7 @@ function Home() {
 
     async function taskPogress() {
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/pogress`, {}, { withCredentials: true })
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/pogress`, {}, { withCredentials: true })
             setAvarage(response.data.avarage)
             setTotaltasks(response.data.totalTask)
             setCompletedTask(response.data.finishedTask)

@@ -23,7 +23,7 @@ function Signup() {
         if (!emailvalida.test(email)) toast.error('Plz enter valid email')
         if (password.length < 4) toast.error('Plz add few words in password')
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/register`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
                 username: username,
                 email: email,
                 password: password

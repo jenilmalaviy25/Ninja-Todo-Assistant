@@ -28,7 +28,7 @@ const UserProfile = ({ onClose }) => {
 
     const handleSave = async () => {
         try {
-            const response = await axios.put(`${import.meta.env.BACKEND_URL}/api/user/update`, {
+            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/user/update`, {
                 username: tempusername,
                 email: tempemail
             }, { withCredentials: true })
@@ -53,7 +53,7 @@ const UserProfile = ({ onClose }) => {
     const logout = async () => {
         localStorage.clear()
         try {
-            const response = await axios.post('/api/user/logout', {}, { withCredentials: true })
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/logout`, {}, { withCredentials: true })
             toast.success(response.data.message)
             navigate('/')
         } catch (error) {

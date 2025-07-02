@@ -19,7 +19,7 @@ function ChatBot({ onClose }) {
     const addchat = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post(`${import.meta.env.BACKEND_URL}/api/user/bot`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/bot`, {
                 userText: chat.toLowerCase()
             }, { withCredentials: true })
 
