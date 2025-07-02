@@ -81,7 +81,8 @@ export const login = asynchandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: 'none'
+        sameSite: 'None',
+        maxAge:24*60*60*1000
     }
 
     return res.status(200)
