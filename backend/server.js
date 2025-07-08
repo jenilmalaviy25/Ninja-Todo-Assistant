@@ -13,7 +13,7 @@ const app = express()
 
 await connectDB()
 
-app.use(cors({origin:process.env.FRONTEND_URL,
+app.use(cors({origin:"*",
     credentials:true
 }))
 app.use(express.json())
