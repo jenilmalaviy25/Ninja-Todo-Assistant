@@ -19,7 +19,7 @@ function Login() {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/login`, {
                 username: username,
                 password: password
-            })
+            },{withCredentials:true})
             if (response.status === 200) {
                 const result = response.data
                 localStorage.setItem('_id', result.existuser._id);
