@@ -13,11 +13,16 @@ const app = express()
 
 await connectDB()
 
-app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static('public'))
 app.use(cookieParser())
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
+
 app.use('/api',indexRouter)
 app.use(handleError)
 
